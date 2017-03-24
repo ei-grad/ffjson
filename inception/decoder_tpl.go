@@ -528,6 +528,7 @@ type ujFunc struct {
 	SI          *StructInfo
 	ValidValues []string
 	ResetFields bool
+	Strict      bool
 }
 
 var ujFuncTxt = `
@@ -544,6 +545,9 @@ func (j *{{.SI.Name}}) UnmarshalJSON(input []byte) error {
 func (j *{{.SI.Name}}) UnmarshalJSONFFLexer(fs *fflib.FFLexer, state fflib.FFParseState) error {
 	var err error
 	currentKey := ffjt{{.SI.Name}}base
+	{{if eq .Strict true}}
+	var unknownFields = make([]string, 0)
+	{{end}}
 	_ = currentKey
 	tok := fflib.FFTok_init
 	wantedTok := fflib.FFTok_init
@@ -616,6 +620,9 @@ mainparse:
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
+				{{end}}
+				{{if eq .Strict true}}
+				unknownFields = append(unknownFields, string(kn))
 				{{end}}
 				currentKey = ffjt{{.SI.Name}}nosuchkey
 				state = fflib.FFParse_want_colon
@@ -703,6 +710,13 @@ done:
 	}
 {{end}}
 {{end}}
+
+{{if eq .Strict true}}
+	if len(unknownFields) > 0 {
+		return fs.WrapErr(fflib.NewUnknownFieldsError(unknownFields))
+	}
+{{end}}
+
 	return nil
 }
 `

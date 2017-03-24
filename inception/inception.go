@@ -37,9 +37,10 @@ type Inception struct {
 	OutputFuncs   []string
 	q             ConditionalWrite
 	ResetFields   bool
+	Strict        bool
 }
 
-func NewInception(inputPath string, packageName string, outputPath string, resetFields bool) *Inception {
+func NewInception(inputPath string, packageName string, outputPath string, resetFields bool, strict bool) *Inception {
 	return &Inception{
 		objs:          make([]*StructInfo, 0),
 		InputPath:     inputPath,
@@ -48,6 +49,7 @@ func NewInception(inputPath string, packageName string, outputPath string, reset
 		OutputFuncs:   make([]string, 0),
 		OutputImports: make(map[string]bool),
 		ResetFields:   resetFields,
+		Strict:        strict,
 	}
 }
 

@@ -23,7 +23,7 @@ import (
 	"os"
 )
 
-func GenerateFiles(goCmd string, inputPath string, outputPath string, importName string, forceRegenerate bool, resetFields bool) error {
+func GenerateFiles(goCmd string, inputPath string, outputPath string, importName string, forceRegenerate bool, resetFields bool, strict bool) error {
 
 	if _, StatErr := os.Stat(outputPath); !os.IsNotExist(StatErr) {
 		inputFileInfo, inputFileErr := os.Stat(inputPath)
@@ -43,7 +43,7 @@ func GenerateFiles(goCmd string, inputPath string, outputPath string, importName
 		return err
 	}
 
-	im := NewInceptionMain(goCmd, inputPath, outputPath, resetFields)
+	im := NewInceptionMain(goCmd, inputPath, outputPath, resetFields, strict)
 
 	err = im.Generate(packageName, structs, importName)
 	if err != nil {
