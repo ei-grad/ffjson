@@ -48,6 +48,7 @@ const (
 	FFParse_want_colon
 	FFParse_want_value
 	FFParse_after_value
+	FFParse_want_key_or_map_end
 )
 
 type FFTok int

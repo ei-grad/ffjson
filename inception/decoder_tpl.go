@@ -209,6 +209,7 @@ var handleObjectTxt = `
 		{{end}}
 
 		wantVal := true
+		seenComma := false
 
 		for {
 		{{$keyPtr := false}}
@@ -233,6 +234,9 @@ var handleObjectTxt = `
 				goto tokerror
 			}
 			if tok == fflib.FFTok_right_bracket {
+				if wantVal && seenComma {
+					return fs.WrapErr(fmt.Errorf("wanted value token, but got token: %v", tok))
+				}
 				break
 			}
 
@@ -244,6 +248,7 @@ var handleObjectTxt = `
 				}
 				continue
 			} else {
+				seenComma = true
 				wantVal = true
 			}
 
@@ -564,7 +569,7 @@ mainparse:
 				wantedTok = fflib.FFTok_left_bracket
 				goto wrongtokenerror
 			}
-			state = fflib.FFParse_want_key
+			state = fflib.FFParse_want_key_or_map_end
 			continue
 
 		case fflib.FFParse_after_value:
@@ -577,9 +582,9 @@ mainparse:
 				goto wrongtokenerror
 			}
 
-		case fflib.FFParse_want_key:
+		case fflib.FFParse_want_key, fflib.FFParse_want_key_or_map_end:
 			// json {} ended. goto exit. woo.
-			if tok == fflib.FFTok_right_bracket {
+			if state == fflib.FFParse_want_key_or_map_end && tok == fflib.FFTok_right_bracket {
 				goto done
 			}
 			if tok != fflib.FFTok_string {
