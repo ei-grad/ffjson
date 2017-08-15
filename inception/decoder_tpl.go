@@ -74,6 +74,8 @@ var handlerNumericTxt = `
 	if tok == fflib.FFTok_null {
 		{{if eq .TakeAddr true}}
 		{{.Name}} = nil
+		{{else}}
+		return fs.WrapErr(fmt.Errorf("can't read null into non-pointer"))
 		{{end}}
 	} else {
 		{{if eq .ParseFunc "ParseFloat" }}
@@ -145,6 +147,8 @@ var handleStringTxt = `
 	if tok == fflib.FFTok_null {
 	{{if eq .TakeAddr true}}
 		{{.Name}} = nil
+	{{else}}
+		return fs.WrapErr(fmt.Errorf("can't read null into non-pointer"))
 	{{end}}
 	} else {
 	{{if eq .TakeAddr true}}
@@ -440,6 +444,8 @@ var handleBoolTxt = `
 	if tok == fflib.FFTok_null {
 		{{if eq .TakeAddr true}}
 		{{.Name}} = nil
+		{{else}}
+		return fs.WrapErr(fmt.Errorf("can't read null into non-pointer"))
 		{{end}}
 	} else {
 		tmpb := fs.Output.Bytes()
@@ -742,6 +748,8 @@ var handleUnmarshalerTxt = `
 				{{end}}
 				{{if eq .TakeAddr true }}
 					{{.Name}} = nil
+				{{else}}
+					return fs.WrapErr(fmt.Errorf("can't read null into non-pointer"))
 				{{end}}
 				state = fflib.FFParse_after_value
 				goto mainparse
@@ -768,6 +776,8 @@ var handleUnmarshalerTxt = `
 		if tok == fflib.FFTok_null {
 			{{if eq .TakeAddr true }}
 				{{.Name}} = nil
+			{{else}}
+				return fs.WrapErr(fmt.Errorf("can't read null into non-pointer"))
 			{{end}}
 			state = fflib.FFParse_after_value
 			goto mainparse
